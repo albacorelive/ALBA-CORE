@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALBA CORE — Hub Ufficiale</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body {
+            background-color: #6d14d9;
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        .wave-bg {
+            background-color: #7c1ef0;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260' viewBox='0 0 260 260'%3E%3Cpath fill='%238f3bf7' fill-opacity='0.65' d='M42.5 18c22-8 45 7 51 28 6 21-10 43-31 46-21 3-41-13-43-34-2-21 1-32 23-40zm125 12c26-6 53 10 58 36 5 26-14 50-40 52-26 2-48-18-49-44-1-26 5-38 31-44zM65 138c28-5 54 14 57 42 3 28-19 52-47 52-28 0-49-23-48-51 1-28 10-38 38-43zm115 16c24-9 51 4 58 29 7 25-8 51-33 56-25 5-49-12-52-37-3-25 3-39 27-48z'/%3E%3C/svg%3E");
+            background-size: 260px 260px;
+        }
+
+        .link-card {
+            background-color: #ffffff;
+            border: 2.5px solid #09090b;
+            box-shadow: 0 4px 0 #09090b;
+            transition: transform 0.12s ease, box-shadow 0.12s ease, background-color 0.12s ease;
+        }
+
+        .link-card:hover {
+            background-color: #faf5ff;
+            transform: translateY(-1px);
+            box-shadow: 0 5px 0 #09090b;
+        }
+
+        .link-card:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #09090b;
+        }
+    </style>
+</head>
+<body class="min-h-screen w-full overflow-x-hidden relative flex justify-center">
+
+    <!-- SFONDO GLOBALE VIOLA -->
+    <div class="fixed inset-0 bg-[#6b12d6] -z-10"></div>
+
+    <!-- COLONNA CENTRALE IN STILE SCHEDA -->
+    <main class="w-full max-w-[540px] min-h-screen wave-bg md:my-6 md:min-h-[calc(100vh-3rem)] md:rounded-[28px] px-5 pt-5 pb-12 flex flex-col items-center relative shadow-2xl">
+
+        <!-- BARRA SUPERIORE -->
+        <div class="w-full flex items-center justify-between mb-6">
+            <button onclick="copyHubLink()" title="ALBA CORE Hub" class="w-10 h-10 rounded-full bg-[#3d0a7a]/85 hover:bg-[#3d0a7a] text-white flex items-center justify-center shadow cursor-pointer transition">
+                <i data-lucide="sparkles" class="w-4 h-4"></i>
+            </button>
+
+            <button onclick="shareHub()" title="Condividi pagina" class="w-10 h-10 rounded-full bg-[#3d0a7a]/85 hover:bg-[#3d0a7a] text-white flex items-center justify-center shadow cursor-pointer transition">
+                <i data-lucide="share" class="w-4 h-4"></i>
+            </button>
+        </div>
+
+        <!-- AVATAR CIRCOLARE -->
+        <div class="w-24 h-24 rounded-full bg-[#09090b] border-2 border-[#a855f7]/50 flex items-center justify-center overflow-hidden shadow-xl mb-4">
+            <img src="logo.png" alt="ALBA CORE" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="w-full h-full object-cover">
+            <span class="hidden w-full h-full items-center justify-center text-2xl font-black text-[#c084fc]">AC</span>
+        </div>
+
+        <!-- TITOLO, BIO E BADGE -->
+        <h1 class="text-white text-2xl font-extrabold tracking-tight text-center mb-1.5">
+            ALBA CORE
+        </h1>
+        <p class="text-white/95 text-sm font-semibold text-center max-w-sm mb-3">
+            Tutti i siti e i canali ufficiali di Alba &amp; DjFillob 💜
+        </p>
+        <div class="bg-[#581c87]/80 backdrop-blur-sm text-white/90 text-xs font-semibold px-3.5 py-1 rounded-full mb-7 border border-white/15">
+            Alba (CN) • Hub Ufficiale
+        </div>
+
+        <!-- LISTA PULSANTI / SITI -->
+        <div id="links-container" class="w-full max-w-[460px] space-y-4"></div>
+
+        <!-- NOTIFICA COPIA LINK -->
+        <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 bg-zinc-950 text-white text-xs font-semibold px-4 py-2.5 rounded-full shadow-lg opacity-0 pointer-events-none transition-opacity duration-200 z-50">
+            Link copiato negli appunti!
+        </div>
+    </main>
+
+    <!-- WIDGET QR CODE IN BASSO A DESTRA (VISIBILE SU SCHERMI GRANDI) -->
+    <aside class="hidden lg:flex fixed bottom-5 right-5 flex-col items-center text-white z-20">
+        <span class="text-xs font-bold tracking-tight mb-2 drop-shadow">Visualizza su dispositivo mobile</span>
+        <div class="bg-white p-2 rounded-xl shadow-xl">
+            <div id="qrcode"></div>
+        </div>
+    </aside>
+
+    <script>
+        const SITE_LINKS = [
+            {
+                title: "Alba Core Live",
+                url: "https://albacorelive.github.io/AlbaCoreLive2026.2/",
+                icon: "radio"
+            }
+        ];
+
+        function renderLinks() {
+            const container = document.getElementById("links-container");
+            container.innerHTML = "";
+
+            SITE_LINKS.forEach((item) => {
+                const row = document.createElement("div");
+                row.className = "link-card rounded-full px-4 py-3.5 flex items-center justify-between text-[#6b12d6] font-bold text-base cursor-pointer relative";
+                row.onclick = () => {
+                    window.open(item.url, "_blank", "noopener,noreferrer");
+                };
+
+                row.innerHTML = `
+                    <span class="w-8 h-8 flex items-center justify-center shrink-0 text-[#6b12d6]">
+                        <i data-lucide="${item.icon}" class="w-6 h-6 stroke-[2.2]"></i>
+                    </span>
+                    <span class="flex-1 text-center px-2 truncate">${item.title}</span>
+                    <button type="button" onclick="copySingleLink(event, '${item.url}')" title="Copia link" class="w-7 h-7 rounded-full hover:bg-purple-100 flex items-center justify-center text-zinc-500 hover:text-zinc-900 shrink-0 cursor-pointer transition">
+                        <i data-lucide="more-vertical" class="w-4 h-4"></i>
+                    </button>
+                `;
+                container.appendChild(row);
+            });
+
+            lucide.createIcons();
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById("toast");
+            toast.textContent = message;
+            toast.classList.remove("opacity-0");
+            toast.classList.add("opacity-100");
+            clearTimeout(window.toastTimer);
+            window.toastTimer = setTimeout(() => {
+                toast.classList.remove("opacity-100");
+                toast.classList.add("opacity-0");
+            }, 2200);
+        }
+
+        function copySingleLink(event, url) {
+            event.stopPropagation();
+            navigator.clipboard.writeText(url).then(() => {
+                showToast("Link del sito copiato!");
+            });
+        }
+
+        function copyHubLink() {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                showToast("Link dell'hub copiato!");
+            });
+        }
+
+        function shareHub() {
+            if (navigator.share) {
+                navigator.share({
+                    title: document.title,
+                    url: window.location.href
+                }).catch(() => {});
+            } else {
+                copyHubLink();
+            }
+        }
+
+        new QRCode(document.getElementById("qrcode"), {
+            text: window.location.href,
+            width: 96,
+            height: 96,
+            colorDark: "#6b12d6",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.M
+        });
+
+        renderLinks();
+    </script>
+</body>
+</html>
