@@ -97,6 +97,21 @@
                 title: "Alba Core Live",
                 url: "https://albacorelive.github.io/AlbaCoreLive2026.2/",
                 icon: "radio"
+            },
+            {
+                title: "YouTube",
+                url: "https://www.youtube.com/channel/UCbZxPqOml-CwVd1z85BE5RA",
+                icon: "youtube"
+            },
+            {
+                title: "Instagram",
+                url: "https://www.instagram.com/albacore2026/reels/",
+                icon: "instagram"
+            },
+            {
+                title: "TikTok",
+                url: "https://www.tiktok.com/@albacore26",
+                icon: "music-2"
             }
         ];
 
@@ -141,7 +156,7 @@
         function copySingleLink(event, url) {
             event.stopPropagation();
             navigator.clipboard.writeText(url).then(() => {
-                showToast("Link del sito copiato!");
+                showToast("Link copiato negli appunti!");
             });
         }
 
